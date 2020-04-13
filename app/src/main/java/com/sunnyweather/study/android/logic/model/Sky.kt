@@ -29,6 +29,4 @@ private val sky = mapOf(
     "DUST" to Sky("浮尘", R.drawable.ic_fog, R.drawable.bg_fog)
 )
 
-fun getSky (skycon: String) : Sky {
-    return sky[skycon] ?: sky["CLEAR_DAY"]!!
-}
+fun getSky (skycon: String) : Sky = sky[skycon] ?: sky["CLEAR_DAY"]!!
