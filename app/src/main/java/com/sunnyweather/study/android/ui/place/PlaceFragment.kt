@@ -1,5 +1,6 @@
 package com.sunnyweather.study.android.ui.place
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +12,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sunnyweather.study.android.R
+import com.sunnyweather.study.android.ui.weather.WeatherActivity
 import kotlinx.android.synthetic.main.fragment_place.*
 
 class PlaceFragment : Fragment() {
 
-    private val viewModel by lazy { ViewModelProvider(this).get(PlaceViewModel::class.java) }
+    val viewModel by lazy { ViewModelProvider(this).get(PlaceViewModel::class.java) }
     private lateinit var adapter: PlaceAdapter
 
     override fun onCreateView(
@@ -28,9 +30,24 @@ class PlaceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        getLocalSavedPlaceIfExist()
         initAdapter()
         addLister()
         addObserve()
+    }
+
+    private fun getLocalSavedPlaceIfExist() {
+        if (viewModel.isPlaceSaved()) {
+            val place = viewModel.getSavedPlace()
+            val intent = Intent(context, WeatherActivity::class.java).apply {
+                putExtra("location_lng", place.location.lng)
+                putExtra("location_lat", place.location.lat)
+                putExtra("place_name", place.name)
+            }
+            startActivity(intent)
+            activity?.finish()
+            return
+        }
     }
 
     private fun initAdapter() {
@@ -44,7 +61,7 @@ class PlaceFragment : Fragment() {
         searchPlaceEdit.addTextChangedListener {
             val content = it.toString()
             if (content.isNotEmpty()) {
-                viewModel.seachPlaces(content)
+                viewModel.searchPlaces(content)
             } else {
                 recyclerview.visibility = View.GONE
                 bgImageView.visibility = View.VISIBLE

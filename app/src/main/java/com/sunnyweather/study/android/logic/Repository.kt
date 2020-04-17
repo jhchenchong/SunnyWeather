@@ -5,6 +5,7 @@ import android.content.Context
 import android.system.ErrnoException
 import android.util.Log
 import androidx.lifecycle.liveData
+import com.sunnyweather.study.android.logic.dao.PlaceDao
 import com.sunnyweather.study.android.logic.model.Place
 import com.sunnyweather.study.android.logic.model.Weather
 import com.sunnyweather.study.android.logic.network.SunnyWeatherNetwork
@@ -17,13 +18,19 @@ import kotlin.coroutines.CoroutineContext
 
 object Repository {
 
+    fun savePlace(place: Place) = PlaceDao.savePlace(place)
+
+    fun getSavedPlace() = PlaceDao.getSavedPlace()
+
+    fun isPlaceSaved() = PlaceDao.isPlaceSaved()
+
     fun searchPlaces(query: String) = fire(Dispatchers.IO) {
         val placeResponse = SunnyWeatherNetwork.searchPlaces(query)
         if (placeResponse.status == "ok") {
             val places = placeResponse.places
             Result.success(places)
         } else {
-            Result.failure(RuntimeException("Responce status is ${placeResponse.status}"))
+            Result.failure(RuntimeException("Response status is ${placeResponse.status}"))
         }
     }
 

@@ -31,7 +31,7 @@ class WeatherActivity : AppCompatActivity() {
         initView()
         configViewModel()
         addObserve()
-        refresh()
+        refreshWeather()
     }
 
     private fun configStatusBar() {
@@ -68,7 +68,7 @@ class WeatherActivity : AppCompatActivity() {
         })
     }
 
-    private fun refresh() {
+    private fun refreshWeather() {
         viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
     }
 
