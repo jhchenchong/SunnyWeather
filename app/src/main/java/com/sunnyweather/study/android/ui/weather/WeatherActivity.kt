@@ -9,8 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.sunnyweather.study.android.R
 import com.sunnyweather.study.android.logic.model.Weather
 import com.sunnyweather.study.android.logic.model.getSky
@@ -23,17 +22,29 @@ import java.util.*
 
 class WeatherActivity : AppCompatActivity() {
 
-    val viewModel by lazy { ViewModelProviders.of(this).get(WeatherViewModel::class.java) }
+    private val viewModel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        configStatusBar()
+        initView()
+        configViewModel()
+        addObserve()
+        refresh()
+    }
+
+    private fun configStatusBar() {
         val decorView = window.decorView
         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         window.statusBarColor = Color.TRANSPARENT
+    }
 
+    private fun initView() {
         setContentView(R.layout.activity_weather)
+    }
 
+    private fun configViewModel() {
         if (viewModel.locationLng.isEmpty()) {
             viewModel.locationLng = intent.getStringExtra("location_lng") ?: ""
         }
@@ -43,7 +54,9 @@ class WeatherActivity : AppCompatActivity() {
         if (viewModel.placeName.isEmpty()) {
             viewModel.placeName = intent.getStringExtra("place_name") ?: ""
         }
+    }
 
+    private fun addObserve() {
         viewModel.weatherLiveData.observe(this, Observer {
             val weather = it.getOrNull()
             if (weather != null) {
@@ -53,7 +66,9 @@ class WeatherActivity : AppCompatActivity() {
                 it.exceptionOrNull()?.printStackTrace()
             }
         })
+    }
 
+    private fun refresh() {
         viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
     }
 
